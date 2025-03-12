@@ -1,4 +1,4 @@
-#SingleInstance Force
+#SingleInstance off
 #NoEnv ; Рекомендуется для совместимости с будущими версиями AutoHotkey
 SendMode Input ; Рекомендуется для новых скриптов
 SetWorkingDir %A_ScriptDir% ; Устанавливает рабочую директорию
@@ -78,44 +78,44 @@ StartScript:
         return
     }
     
-    ; Получаем значение задержки из поля ввода
+
     GuiControlGet, delay,, DelayEdit
     
-    ; Обновляем статус
+
     GuiControl,, StatusText, Running...
     GuiControl, +c008000, StatusText
     
-    ; Запускаем выполнение в отдельном потоке
+
     isRunning := true
     isPaused := false
     SetTimer, RunMainLoop, -1
 return
 
-; Остановка скрипта
+
 StopScript:
     isRunning := false
     isPaused := false
     
-    ; Обновляем статус
+
     GuiControl,, StatusText, Stopped.
     GuiControl, +c0000FF, StatusText
     
-    ; Убираем все всплывающие подсказки
+
     ToolTip
 return
 
-; Пауза/Продолжение скрипта
+
 PauseScript:
     if (isRunning) {
         isPaused := !isPaused
         
         if (isPaused) {
-            ; Обновляем статус на "Пауза"
+
             GuiControl,, StatusText, Paused. Click F10 to continue.
             GuiControl, +cFF8000, StatusText
             ToolTip, Execution paused., 100, 100
         } else {
-            ; Обновляем статус на "Выполнение"
+
             GuiControl,, StatusText, Running...
             GuiControl, +c008000, StatusText
             ToolTip
@@ -123,10 +123,10 @@ PauseScript:
     }
 return
 
-; Основной цикл выполнения
+
 RunMainLoop:
     while (isRunning) {
-        ; Проверка паузы
+
         while (isPaused && isRunning) {
             Sleep, 100
         }
@@ -138,16 +138,16 @@ RunMainLoop:
         SetTitleMatchMode, 2
         CoordMode, Mouse, Window
         
-        ; Проверяем существование целевого окна
+
         IfWinNotExist, %targetWindow%
         {
-            ; Информируем пользователя, что окно не найдено
+
             ToolTip, Target window not found. Waiting..., 100, 100
             Sleep, 2000
             continue
         }
         
-        ; Активируем целевое окно
+
         WinActivate, %targetWindow%
         WinWaitActive, %targetWindow%,, 5
         if (ErrorLevel) {
@@ -161,10 +161,10 @@ RunMainLoop:
         ; =========================================
         
                 
-        ; Добавляем информационное сообщение о завершении цикла
+
         ToolTip, Цикл завершен. Ожидание %delay% мс перед следующим запуском..., 100, 100
         
-        ; Ожидаем указанное время перед следующим выполнением цикла
+
         countDown := delay
         while (countDown > 0 && isRunning && !isPaused) {
             ToolTip, Цикл завершен. Ожидание %countDown% мс перед следующим запуском..., 100, 100
@@ -172,14 +172,13 @@ RunMainLoop:
             countDown -= 100
         }
         
-        ; Убираем информационное сообщение
+
         if (isRunning && !isPaused) {
             ToolTip
         }
     }
 return
 
-; Обработка закрытия GUI
 GuiClose:
     isRunning := false
     ExitApp
